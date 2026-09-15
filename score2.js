@@ -42,6 +42,15 @@
     }
   };
 
+  // Conroy et al., Eur Heart J. 2003;24:987–1003, Appendix A.
+  // Original SCORE for high-risk European regions; outcome is fatal CVD only.
+  const SCORE_HIGH_RISK = {
+    male: { chd: [-21.0, 4.62], nonChd: [-25.7, 5.47] },
+    female: { chd: [-28.7, 6.23], nonChd: [-30.0, 6.42] },
+    chdBeta: { cholesterol: 0.24, sbp: 0.018, smoking: 0.71 },
+    nonChdBeta: { cholesterol: 0.02, sbp: 0.022, smoking: 0.63 }
+  };
+
   function validate(input) {
     if (!SCORE2_MODEL[input.sex]) throw new Error("Укажите пол пациента.");
     if (!Number.isInteger(input.age) || input.age < 40 || input.age > 89) {
@@ -53,17 +62,22 @@
     if (!Number.isFinite(input.totalCholesterol) || input.totalCholesterol < 3 || input.totalCholesterol > 8) {
       throw new Error("Введите общий холестерин от 3 до 8 ммоль/л.");
     }
-    if (!Number.isFinite(input.hdl) || input.hdl < 0.5 || input.hdl > 2.5) {
-      throw new Error("Введите холестерин ЛПВП от 0,5 до 2,5 ммоль/л.");
-    }
-    if (input.hdl >= input.totalCholesterol) {
-      throw new Error("ЛПВП должен быть ниже общего холестерина.");
+    if (input.hdl == null) {
+      if (input.age > 69) throw new Error("Для возраста 70–89 лет требуется ЛПВП для расчёта SCORE2-OP.");
+    } else {
+      if (!Number.isFinite(input.hdl) || input.hdl < 0.5 || input.hdl > 2.5) {
+        throw new Error("Введите холестерин ЛПВП от 0,5 до 2,5 ммоль/л.");
+      }
+      if (input.hdl >= input.totalCholesterol) {
+        throw new Error("ЛПВП должен быть ниже общего холестерина.");
+      }
     }
     if (input.smoking !== 0 && input.smoking !== 1) throw new Error("Укажите статус курения.");
   }
 
   function calculate(input) {
     validate(input);
+    if (input.hdl == null) return calculateLegacyScore(input);
     const isOlderPerson = input.age >= 70;
     const model = (isOlderPerson ? SCORE2_OP_MODEL : SCORE2_MODEL)[input.sex];
     const ageCenter = isOlderPerson ? input.age - 73 : (input.age - 60) / 5;
@@ -81,7 +95,33 @@
     return { risk: calibratedRisk * 100, model: isOlderPerson ? "SCORE2-OP" : "SCORE2" };
   }
 
-  function category(age, risk) {
+  function calculateLegacyScore(input) {
+    const sexModel = SCORE_HIGH_RISK[input.sex];
+    const endpoints = [
+      { baseline: sexModel.chd, beta: SCORE_HIGH_RISK.chdBeta },
+      { baseline: sexModel.nonChd, beta: SCORE_HIGH_RISK.nonChdBeta }
+    ];
+
+    const risk = endpoints.reduce((total, endpoint) => {
+      const [alpha, power] = endpoint.baseline;
+      const baselineSurvival = (age) => Math.exp(-Math.exp(alpha) * Math.pow(age - 20, power));
+      const weightedRisk = endpoint.beta.cholesterol * (input.totalCholesterol - 6)
+        + endpoint.beta.sbp * (input.sbp - 120)
+        + endpoint.beta.smoking * input.smoking;
+      const survival = (age) => Math.pow(baselineSurvival(age), Math.exp(weightedRisk));
+      return total + 1 - survival(input.age + 10) / survival(input.age);
+    }, 0);
+
+    return { risk: risk * 100, model: "SCORE" };
+  }
+
+  function category(age, risk, model) {
+    if (model === "SCORE") {
+      if (risk < 1) return { key: "low", label: "Низкий риск" };
+      if (risk < 5) return { key: "high", label: "Умеренный риск" };
+      if (risk < 10) return { key: "very-high", label: "Высокий риск" };
+      return { key: "very-high", label: "Очень высокий риск" };
+    }
     const high = age < 50 ? 2.5 : age < 70 ? 5 : 7.5;
     const veryHigh = age < 50 ? 7.5 : age < 70 ? 10 : 15;
     if (risk < high) return { key: "low", label: "Низкий–умеренный риск" };
