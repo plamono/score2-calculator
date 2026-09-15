@@ -1,7 +1,7 @@
 "use strict";
 
 const assert = require("node:assert/strict");
-const Score2 = require("./score2.js");
+const Score2 = require("./score2-v2.js");
 
 // Published SCORE2 paper example for the very-high-risk region:
 // age 50, current smoker, SBP 140, TC 5.5, HDL 1.3 mmol/L.
