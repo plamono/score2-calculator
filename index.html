@@ -49,6 +49,7 @@
           <label class="field">
             <span class="label">Холестерин ЛПВП</span>
             <span class="input-wrap"><input id="hdl" type="text" inputmode="decimal" value="1,3" required><span>ммоль/л</span></span>
+            <span class="unknown-option"><input id="hdl-unknown" type="checkbox"> ЛПВП неизвестен</span>
           </label>
 
           <div class="field full">
@@ -79,7 +80,7 @@
         </div>
         <div class="meter" aria-hidden="true"><span id="meter-fill"></span></div>
         <p id="interpretation"></p>
-        <p class="result-note">Результат служит для оценки риска в первичной профилактике и не является диагнозом или назначением лечения.</p>
+        <p id="result-note" class="result-note">Результат служит для оценки риска в первичной профилактике и не является диагнозом или назначением лечения.</p>
       </section>
 
       <details>
@@ -88,7 +89,7 @@
       </details>
 
       <footer>
-        Методика: SCORE2 и SCORE2-OP, ESC 2021. Расчёт выполняется локально; введённые данные никуда не отправляются.
+        Методика: SCORE2/SCORE2-OP (ESC 2021); при отсутствии ЛПВП — прежняя модель SCORE. Расчёт выполняется локально; введённые данные никуда не отправляются.
       </footer>
     </section>
   </main>
