@@ -27,4 +27,15 @@ assert.ok(Math.abs(opMale.risk - 40.8) < 0.1, `OP male expected 40.8%, got ${opM
 assert.ok(Math.abs(opFemale.risk - 46.2) < 0.1, `OP female expected 46.2%, got ${opFemale.risk}`);
 assert.throws(() => Score2.calculate({ ...base, sex: "male", age: 90 }), /40 до 89/);
 
-console.log(`OK: SCORE2 male=${male.toFixed(1)}%, female=${female.toFixed(1)}%; SCORE2-OP male=${opMale.risk.toFixed(1)}%, female=${opFemale.risk.toFixed(1)}%`);
+// Original SCORE high-risk chart checks (fatal CVD only).
+const legacy = Score2.calculate({
+  sex: "male", age: 60, smoking: 1, sbp: 160, totalCholesterol: 6, hdl: null
+});
+assert.equal(legacy.model, "SCORE");
+assert.ok(Math.abs(legacy.risk - 17.65) < 0.02, `SCORE expected 17.65%, got ${legacy.risk}`);
+assert.throws(
+  () => Score2.calculate({ sex: "male", age: 75, smoking: 0, sbp: 140, totalCholesterol: 5.5, hdl: null }),
+  /требуется ЛПВП/
+);
+
+console.log(`OK: SCORE2 ${male.toFixed(1)}%; SCORE2-OP ${opMale.risk.toFixed(1)}%; SCORE ${legacy.risk.toFixed(1)}%`);
