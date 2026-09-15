@@ -21,6 +21,9 @@ legend { width: 100%; margin-bottom: 20px; font-size: 1.15rem; font-weight: 800;
 .field.full { grid-column: 1 / -1; }
 .label { font-weight: 700; }
 .field small { color: #6c7984; }
+.unknown-option { display: flex; align-items: center; gap: 7px; color: #53636f; font-size: .88rem; cursor: pointer; }
+.unknown-option input { width: 17px; height: 17px; accent-color: #27766d; }
+.input-wrap input:disabled { color: #7b878f; background: #eef2f2; cursor: not-allowed; }
 .input-wrap { min-height: 50px; display: flex; align-items: center; border: 1px solid #c9d5d3; border-radius: 12px; background: #fbfdfd; overflow: hidden; }
 .input-wrap:focus-within { border-color: #27766d; box-shadow: 0 0 0 3px rgba(39, 118, 109, .13); }
 .input-wrap input { width: 100%; min-width: 0; padding: 13px 14px; border: 0; outline: 0; background: transparent; font-weight: 700; }
