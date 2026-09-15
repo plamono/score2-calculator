@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Локальный калькулятор SCORE2 для региона очень высокого сердечно-сосудистого риска">
+  <title>SCORE2 — локальный калькулятор</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="page">
+    <section class="card" aria-labelledby="page-title">
+      <header>
+        <p class="eyebrow">Профилактика сердечно-сосудистых заболеваний</p>
+        <h1 id="page-title">Калькулятор SCORE2</h1>
+        <p class="subtitle">SCORE2 и SCORE2-OP: 10-летний риск фатального или нефатального сердечно-сосудистого события</p>
+        <div class="region">Регион: Россия · очень высокий риск</div>
+      </header>
+
+      <form id="score-form" novalidate>
+        <fieldset>
+          <legend>Данные пациента</legend>
+
+          <div class="field full">
+            <span class="label">Пол</span>
+            <div class="segmented">
+              <label><input type="radio" name="sex" value="male" checked><span>Мужской</span></label>
+              <label><input type="radio" name="sex" value="female"><span>Женский</span></label>
+            </div>
+          </div>
+
+          <label class="field">
+            <span class="label">Возраст</span>
+            <span class="input-wrap"><input id="age" type="number" min="40" max="89" step="1" value="50" required><span>лет</span></span>
+            <small>40–69: SCORE2 · 70–89: SCORE2-OP</small>
+          </label>
+
+          <label class="field">
+            <span class="label">Систолическое АД</span>
+            <span class="input-wrap"><input id="sbp" type="number" min="100" max="200" step="1" value="140" required><span>мм рт. ст.</span></span>
+            <small>В диапазоне таблиц SCORE2: 100–200</small>
+          </label>
+
+          <label class="field">
+            <span class="label">Общий холестерин</span>
+            <span class="input-wrap"><input id="total-chol" type="text" inputmode="decimal" value="5,5" required><span>ммоль/л</span></span>
+          </label>
+
+          <label class="field">
+            <span class="label">Холестерин ЛПВП</span>
+            <span class="input-wrap"><input id="hdl" type="text" inputmode="decimal" value="1,3" required><span>ммоль/л</span></span>
+          </label>
+
+          <div class="field full">
+            <span class="label">Курение в настоящее время</span>
+            <div class="segmented">
+              <label><input type="radio" name="smoking" value="0" checked><span>Нет</span></label>
+              <label><input type="radio" name="smoking" value="1"><span>Да</span></label>
+            </div>
+          </div>
+        </fieldset>
+
+        <label class="eligibility">
+          <input id="eligible" type="checkbox" required>
+          <span>Подтверждаю: у пациента нет диагностированного атеросклеротического ССЗ, сахарного диабета, умеренной/тяжёлой ХБП и семейной гиперхолестеринемии.</span>
+        </label>
+
+        <p id="error" class="error" role="alert" hidden></p>
+        <button type="submit">Рассчитать SCORE2</button>
+      </form>
+
+      <section id="result" class="result" aria-live="polite" hidden>
+        <div class="result-top">
+          <div>
+            <span id="model-label" class="result-label">Риск в ближайшие 10 лет</span>
+            <strong id="risk-value">—</strong>
+          </div>
+          <span id="risk-badge" class="badge">—</span>
+        </div>
+        <div class="meter" aria-hidden="true"><span id="meter-fill"></span></div>
+        <p id="interpretation"></p>
+        <p class="result-note">Результат служит для оценки риска в первичной профилактике и не является диагнозом или назначением лечения.</p>
+      </section>
+
+      <details>
+        <summary>Когда SCORE2 не применяется</summary>
+        <p>При возрасте младше 40 или старше 89 лет, установленном ССЗ, сахарном диабете, умеренной/тяжёлой ХБП, семейной гиперхолестеринемии и других состояниях, уже определяющих высокий риск.</p>
+      </details>
+
+      <footer>
+        Методика: SCORE2 и SCORE2-OP, ESC 2021. Расчёт выполняется локально; введённые данные никуда не отправляются.
+      </footer>
+    </section>
+  </main>
+  <script src="score2.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
